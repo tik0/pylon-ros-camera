@@ -410,6 +410,43 @@ bool PylonCameraImpl<CameraTrait>::grab(std::vector<uint8_t>& image)
     return true;
 }
 
+// Grab a picture as std::vector of 8bits objects
+template <typename CameraTrait>
+bool PylonCameraImpl<CameraTrait>::grab(std::vector<uint8_t>& image, uint64_t& timestamp)
+{ 
+    Pylon::CGrabResultPtr ptr_grab_result;
+    if ( !grab(ptr_grab_result) )
+    {   
+        ROS_ERROR("Error: Grab was not successful");
+        return false;
+    }
+    timestamp = ptr_grab_result->GetTimeStamp();
+    const uint8_t *pImageBuffer = reinterpret_cast<uint8_t*>(ptr_grab_result->GetBuffer());
+
+    // ------------------------------------------------------------------------
+    // Bit shifting
+    // ------------------------------------------------------------------------
+    // In case of 12 bits we need to shift the image bits 4 positions to the left
+    std::string ros_enc = currentROSEncoding();
+    uint16_t * shift_array = new uint16_t[img_size_byte_ / 2]; // Dynamically allocated to avoid heap size error
+    std::string gen_api_encoding(cam_->PixelFormat.ToString().c_str());
+    if (encoding_conversions::is_12_bit_ros_enc(ros_enc) && (gen_api_encoding == "BayerRG12" || gen_api_encoding == "BayerBG12" || gen_api_encoding == "BayerGB12" || gen_api_encoding == "BayerGR12" || gen_api_encoding == "Mono12") ){
+        const uint16_t *convert_bits = reinterpret_cast<uint16_t*>(ptr_grab_result->GetBuffer());
+        for (int i = 0; i < img_size_byte_ / 2; i++){
+            shift_array[i] = convert_bits[i] << 4;
+        }
+        image.assign((uint8_t *) shift_array, (uint8_t *) shift_array + img_size_byte_);
+    } else {
+        image.assign(pImageBuffer, pImageBuffer + img_size_byte_);
+    }
+
+    delete[] shift_array;
+    
+    if ( !is_ready_ )
+        is_ready_ = true;
+    return true;
+}
+
 // Grab a picture as pointer to 8bit array
 template <typename CameraTrait>
 bool PylonCameraImpl<CameraTrait>::grab(uint8_t* image)
@@ -426,6 +463,45 @@ bool PylonCameraImpl<CameraTrait>::grab(uint8_t* image)
         ROS_ERROR("Error: Grab was not successful");
         return false;
     }
+
+    // ------------------------------------------------------------------------
+    // Bit shifting
+    // ------------------------------------------------------------------------
+    // In case of 12 bits we need to shift the image bits 4 positions to the left
+    std::string ros_enc = currentROSEncoding();
+    uint16_t shift_array[img_size_byte_ / 2];
+
+    if (encoding_conversions::is_12_bit_ros_enc(ros_enc)){
+        const uint16_t *convert_bits = reinterpret_cast<uint16_t*>(ptr_grab_result->GetBuffer());
+        for (int i = 0; i < img_size_byte_ / 2; i++){
+            shift_array[i] = convert_bits[i] << 4;
+        }
+        memcpy(image, (uint8_t *) shift_array, img_size_byte_);
+    } else {
+        memcpy(image, ptr_grab_result->GetBuffer(), img_size_byte_);
+    }
+
+    
+    return true;
+}
+
+// Grab a picture as pointer to 8bit array
+template <typename CameraTrait>
+bool PylonCameraImpl<CameraTrait>::grab(uint8_t* image, uint64_t& timestamp)
+{   
+
+    // If camera is not grabbing, don't grab
+    if (!cam_->IsGrabbing()){
+        return false;
+    }
+
+    Pylon::CGrabResultPtr ptr_grab_result;
+    if ( !grab(ptr_grab_result) )
+    {   
+        ROS_ERROR("Error: Grab was not successful");
+        return false;
+    }
+    timestamp = ptr_grab_result->GetTimeStamp();
 
     // ------------------------------------------------------------------------
     // Bit shifting

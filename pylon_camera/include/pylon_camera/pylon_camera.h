@@ -118,11 +118,28 @@ public:
 
     /**
      * Grab a camera frame and copy the result into image
+     * @param image reference to the output image.
+     * @param timestamp reference to the timestamp of the output image.
+     * @return true if the image was grabbed successfully.
+     */
+    virtual bool grab(std::vector<uint8_t>& image, uint64_t& timestamp) = 0;
+
+    /**
+     * Grab a camera frame and copy the result into image
      * @param image pointer to the image buffer.
      *              Caution: Make sure the buffer is initialized correctly!
      * @return true if the image was grabbed successfully.
      */
     virtual bool grab(uint8_t* image) = 0;
+
+    /**
+     * Grab a camera frame and copy the result into image
+     * @param image pointer to the image buffer.
+     *              Caution: Make sure the buffer is initialized correctly!
+     * @param timestamp reference to the timestamp of the output image.
+     * @return true if the image was grabbed successfully.
+     */
+    virtual bool grab(uint8_t* image, uint64_t& timestamp) = 0;
 
     /**
      * @brief sets shutter mode for the camera (rolling or global_reset)

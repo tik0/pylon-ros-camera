@@ -697,13 +697,14 @@ void PylonCameraNode::spin()
 bool PylonCameraNode::grabImage()
 {
     boost::lock_guard<boost::recursive_mutex> lock(grab_mutex_); 
-    if ( !pylon_camera_->grab(img_raw_msg_.data) )
+    uint64_t timestamp;
+    if ( !pylon_camera_->grab(img_raw_msg_.data, timestamp) )
     {
         return false;
     }
     // ros::Time timestamp = use_camera_time_ ? ros::Time().fromNSec(img_raw_msg_.data->GetTimeStamp()) : ros::Time::now();
-    const ros::Time timestamp = ros::Time().fromNSec(pylon_camera_->cam_->GetTimeStamp());
-    img_raw_msg_.header.stamp = timestamp;
+    const ros::Time ros_timestamp = ros::Time().fromNSec(timestamp);
+    img_raw_msg_.header.stamp = ros_timestamp;
     // img_raw_msg_.header.stamp = ros::Time::now(); 
     return true;
 }
