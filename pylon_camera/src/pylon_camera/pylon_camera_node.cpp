@@ -701,7 +701,10 @@ bool PylonCameraNode::grabImage()
     {
         return false;
     }
-    img_raw_msg_.header.stamp = ros::Time::now(); 
+    // ros::Time timestamp = use_camera_time_ ? ros::Time().fromNSec(img_raw_msg_.data->GetTimeStamp()) : ros::Time::now();
+    const ros::Time timestamp = ros::Time().fromNSec(img_raw_msg_.data->GetTimeStamp());
+    img_raw_msg_.header.stamp = timestamp;
+    // img_raw_msg_.header.stamp = ros::Time::now(); 
     return true;
 }
 
