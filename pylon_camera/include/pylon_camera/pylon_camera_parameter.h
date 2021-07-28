@@ -295,6 +295,13 @@ public:
      * Only supported for GigE cameras. Default: false
      */
     bool auto_flash_;
+
+    /**
+     * Flag that indicates if the camera should use IEEE1588v2 for time synchronization
+     * Only supported for GigE cameras. Default: true
+     */
+    bool ieee1588v2_;
+
     /**
      * Flag that indicates if the camera, when using auto_flash == true, a flash connected on line 2 which should be on on exposure
      * Only supported for GigE cameras. Default: true

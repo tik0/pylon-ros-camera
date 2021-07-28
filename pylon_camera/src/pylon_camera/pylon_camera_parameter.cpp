@@ -69,7 +69,8 @@ PylonCameraParameter::PylonCameraParameter() :
         inter_pkg_delay_(1000),
         startup_user_set_(""),
         shutter_mode_(SM_DEFAULT),
-        auto_flash_(false)
+        auto_flash_(false),
+        ieee1588v2_(true)
 {}
 
 PylonCameraParameter::~PylonCameraParameter()
@@ -218,6 +219,11 @@ void PylonCameraParameter::readFromRosParameterServer(const ros::NodeHandle& nh)
     if ( nh.hasParam("gige/mtu_size") )
     {
         nh.getParam("gige/mtu_size", mtu_size_);
+    }
+    
+    if ( nh.hasParam("gige/ieee1588v2") )
+    {
+        nh.getParam("gige/ieee1588v2", ieee1588v2_);
     }
 
     if ( nh.hasParam("enable_status_publisher") )

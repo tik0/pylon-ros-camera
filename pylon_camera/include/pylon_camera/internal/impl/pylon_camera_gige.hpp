@@ -223,6 +223,9 @@ bool PylonGigECamera::applyCamSpecificStartupSettings(const PylonCameraParameter
                 ROS_WARN("setting MTU");
                 cam_->GevSCPSPacketSize.SetValue(parameters.mtu_size_);
                 ROS_WARN("MTU Setted");
+                ROS_WARN("setting IEEE1588v2");
+                cam_->GevIEEE1588.SetValue(parameters.ieee1588v2_);
+                ROS_WARN("IEEE1588v2 Setted");
                 if (parameters.auto_flash_)
                 {
                     std::map<int, bool> flash_on_lines;
@@ -247,6 +250,7 @@ bool PylonGigECamera::applyCamSpecificStartupSettings(const PylonCameraParameter
                 cam_->UserSetSelector.SetValue(Basler_GigECameraParams::UserSetSelector_UserSet1);
                 cam_->UserSetLoad.Execute();
                 cam_->GevSCPSPacketSize.SetValue(parameters.mtu_size_);
+                cam_->GevIEEE1588.SetValue(parameters.ieee1588v2_);
                 ROS_WARN("User Set 1 Loaded");
             } 
         else if (parameters.startup_user_set_ == "UserSet2")
@@ -254,6 +258,7 @@ bool PylonGigECamera::applyCamSpecificStartupSettings(const PylonCameraParameter
                 cam_->UserSetSelector.SetValue(Basler_GigECameraParams::UserSetSelector_UserSet2);
                 cam_->UserSetLoad.Execute();
                 cam_->GevSCPSPacketSize.SetValue(parameters.mtu_size_);
+                cam_->GevIEEE1588.SetValue(parameters.ieee1588v2_);
                 ROS_WARN("User Set 2 Loaded");
             } 
         else if (parameters.startup_user_set_ == "UserSet3")
@@ -261,11 +266,13 @@ bool PylonGigECamera::applyCamSpecificStartupSettings(const PylonCameraParameter
                 cam_->UserSetSelector.SetValue(Basler_GigECameraParams::UserSetSelector_UserSet3);
                 cam_->UserSetLoad.Execute();
                 cam_->GevSCPSPacketSize.SetValue(parameters.mtu_size_);
+                cam_->GevIEEE1588.SetValue(parameters.ieee1588v2_);
                 ROS_WARN("User Set 3 Loaded");
             } 
         else if (parameters.startup_user_set_ == "CurrentSetting")
             {
                 cam_->GevSCPSPacketSize.SetValue(parameters.mtu_size_);
+                cam_->GevIEEE1588.SetValue(parameters.ieee1588v2_);
                 ROS_WARN("No User Set Is selected, Camera current setting will be used");
             }
     }
