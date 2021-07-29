@@ -144,10 +144,6 @@ bool PylonGigECamera::applyCamSpecificStartupSettings(const PylonCameraParameter
 {
     try
     {
-
-        ROS_WARN("setting IEEE1588v2");
-        cam_->GevIEEE1588.SetValue(parameters.ieee1588v2_);
-        ROS_WARN("IEEE1588v2 Setted");
         if (parameters.startup_user_set_ == "Default")
             {
 
